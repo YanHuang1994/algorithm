@@ -5,7 +5,7 @@
 #include <ctime>
 #include <chrono>
 #include <random>  // Include the random number generation library
-#include "SortingAlgorithms.h"
+#include "../include/SortingAlgorithms.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -42,7 +42,7 @@ bool isSorted(const vector<int>& arr) {
  * Uses a high-quality random number generator (Mersenne Twister) to ensure better randomness.
  * 
  * @param size The size of the array to generate.
- * @return A vector of random integers between 0 and 100,000.
+ * @return A vector of random integers between 0 and 2,000,000.
  */
 vector<int> generateRandomArray(int size) {
     vector<int> arr(size);
@@ -50,7 +50,7 @@ vector<int> generateRandomArray(int size) {
     // Use a random device as the seed to ensure different random numbers each time
     std::random_device rd;
     std::mt19937 gen(rd());  // Mersenne Twister engine for random number generation
-    std::uniform_int_distribution<> dis(0, 2000000); // Uniform distribution in the range [0, 100000]
+    std::uniform_int_distribution<> dis(0, 2000000); // Uniform distribution in the range [0, 2,000,000]
 
     // Populate the array with random numbers
     for (int i = 0; i < size; i++) {
@@ -145,6 +145,12 @@ int main() {
 
         // Benchmark Bucket Sort (can handle larger arrays efficiently)
         benchmarkSort("Bucket Sort", SortingAlgorithms::bucketSort, arr);
+
+        // Benchmark 3-Way Quick Sort (optimized for large arrays with duplicates)
+        benchmarkSort("3-Way Quick Sort combined with insertion", [](vector<int>& arr, int n) { SortingAlgorithms::quickSortWithInsertion(arr, 0, n - 1); }, arr);
+
+        // Benchmark Timsort
+        benchmarkSort("Merge Sort combined with insertion", [](vector<int>& arr, int n) { SortingAlgorithms::mergeSortWithInsertion(arr, n); }, arr);
     }
 
     // Demonstrate sorting with 10 elements using various algorithms
@@ -156,6 +162,8 @@ int main() {
     demonstrateSortingWith10Elements([](vector<int>& arr, int n){ SortingAlgorithms::mergeSort(arr, 0, n-1); });
     demonstrateSortingWith10Elements([](vector<int>& arr, int n){ SortingAlgorithms::quickSort(arr, 0, n-1); });
     demonstrateSortingWith10Elements(SortingAlgorithms::bucketSort);
+    demonstrateSortingWith10Elements([](vector<int>& arr, int n){ SortingAlgorithms::quickSortWithInsertion(arr, 0, n-1); });
+    demonstrateSortingWith10Elements([](vector<int>& arr, int n){ SortingAlgorithms::mergeSortWithInsertion(arr, n); });
 
     return 0;
 }

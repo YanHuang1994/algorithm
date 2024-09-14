@@ -69,6 +69,9 @@ namespace SortingAlgorithms {
      */
     void mergeSort(vector<int>& arr, int l, int r);
 
+
+
+
     /**
      * Helps to maintain the heap property of a subtree rooted at index i.
      * Used in Heap Sort.
@@ -129,6 +132,56 @@ namespace SortingAlgorithms {
      */
     void bucketSort(vector<int>& arr, int n);
 
+    /**
+     * Finds the median of the first, middle, and last elements in the array.
+     * This helps in selecting a better pivot for quicksort to avoid worst-case scenarios.
+     *
+     * @param arr The array from which the pivot is selected.
+     * @param low The starting index of the array.
+     * @param high The ending index of the array.
+     * @return The median element to be used as the pivot.
+     */
+    int medianOfThree(vector<int>& arr, int low, int high);
+
+    /**
+     * Partitions the array into three parts: less than, equal to, and greater than the pivot.
+     * The pivot is chosen using the median-of-three method for better partitioning performance.
+     *
+     * @param arr The array to be partitioned.
+     * @param low The starting index of the array.
+     * @param high The ending index of the array.
+     * @param lt Reference to the index where the 'less than pivot' region ends.
+     * @param gt Reference to the index where the 'greater than pivot' region starts.
+     */
+    void threeWayPartition(vector<int>& arr, int low, int high, int& lt, int& gt);
+
+    /**
+     * Sorts the array using a combination of 3-way quick sort and insertion sort.
+     * When the subarray size is smaller than a predefined threshold, insertion sort
+     * is used for better performance on small datasets. For larger datasets, 3-way
+     * quick sort is applied.
+     * 
+     * @param arr The array to be sorted.
+     * @param low The starting index of the subarray.
+     * @param high The ending index of the subarray.
+     * 
+     * This hybrid approach improves the performance of quicksort by leveraging
+     * insertion sort for small subarrays. The time complexity is O(n log n) on average.
+     */
+    void quickSortWithInsertion(vector<int>& arr, int low, int high);
+
+    /**
+     * mergeSortWithInsertion main logic
+     * 
+     * This algorithm is a hybrid approach that uses insertion sort for small blocks
+     * and merge sort to combine the sorted blocks into a fully sorted array. The array
+     * is divided into blocks of size RUN, sorted using insertion sort, and then merged.
+     * 
+     * @param arr The array to be sorted.
+     * @param n The size of the array.
+     */
+    void mergeSortWithInsertion(vector<int>& arr, int n);
+    
 } // namespace SortingAlgorithms
 
 #endif

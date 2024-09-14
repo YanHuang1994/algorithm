@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -std=c++11 -Wall -g
 
-SRCS = SortingAlgorithms.cpp test.cpp
+SRCS = ./src/SortingAlgorithms.cpp ./src/main.cpp
 OBJS = $(SRCS:.cpp=.o)
 EXEC = sorting_program
 

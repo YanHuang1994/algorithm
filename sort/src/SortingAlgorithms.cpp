@@ -1,4 +1,6 @@
-#include "SortingAlgorithms.h"
+#include "../include/SortingAlgorithms.h"
+
+const int RUN = 32; // The minimum run size for the mergeSortWithInsertion algorithm
 
 using namespace std;
 namespace SortingAlgorithms {
@@ -211,6 +213,91 @@ namespace SortingAlgorithms {
         for (auto i = 0; i < bucketSize; i++) {
             for (std::vector<int>::size_type j = 0; j < buckets[i].size(); j++) {
                 arr[index++] = buckets[i][j];
+            }
+        }
+    }
+
+    void threeWayPartition(vector<int>& arr, int low, int high, int& lt, int& gt) {
+        int pivot = medianOfThree(arr, low, high); // Use the median-of-three pivot selection
+        lt = low;  // Initialize lt to the starting index
+        gt = high; // Initialize gt to the ending index
+        int i = low;
+
+        // Partition the array into three sections: less than, equal to, and greater than pivot
+        while (i <= gt) {
+            if (arr[i] < pivot) {
+                swap(arr[lt++], arr[i++]); // Move elements smaller than the pivot to the left
+            } else if (arr[i] > pivot) {
+                swap(arr[i], arr[gt--]); // Move elements larger than the pivot to the right
+            } else {
+                i++; // Leave elements equal to the pivot in the middle
+            }
+        }
+    }
+
+    int medianOfThree(vector<int>& arr, int low, int high) {
+        int mid = low + (high - low) / 2;
+        // Arrange the first, middle, and last elements in ascending order
+        if (arr[low] > arr[mid]) swap(arr[low], arr[mid]);
+        if (arr[low] > arr[high]) swap(arr[low], arr[high]);
+        if (arr[mid] > arr[high]) swap(arr[mid], arr[high]);
+        // Use the middle element as the pivot
+        swap(arr[mid], arr[high]); // Move the pivot to the end
+        return arr[high];
+    }
+
+    void quickSortWithInsertion(vector<int>& arr, int low, int high) {
+        const int threshold = 20;  // Switch to insertion sort when subarray size is below threshold
+
+        if (low >= high) return;
+
+        if (high - low + 1 <= threshold) {
+            // Copy the subarray [low, high] into a temporary array
+            vector<int> subArr(arr.begin() + low, arr.begin() + high + 1);
+
+            // Use the existing insertionSort function on the temporary array
+            insertionSort(subArr, subArr.size());
+
+            // Copy the sorted subarray back into the original array
+            for (int i = low; i <= high; i++) {
+                arr[i] = subArr[i - low];
+            }
+        } else {
+            int lt, gt;
+            // Perform three-way partition
+            threeWayPartition(arr, low, high, lt, gt);
+
+            // Recursively sort the left and right parts
+            quickSortWithInsertion(arr, low, lt - 1);
+            quickSortWithInsertion(arr, gt + 1, high);
+        }
+    }
+
+    void mergeSortWithInsertion(vector<int>& arr, int n) {
+        // Step 1: Use insertion sort to sort small runs of size RUN
+        for (int i = 0; i < n; i += RUN) {
+            int right = std::min(i + RUN - 1, n - 1);  // Define the right boundary of the current run
+
+            // Use the existing insertionSort function to sort the run
+            std::vector<int> subArr(arr.begin() + i, arr.begin() + right + 1);
+            insertionSort(subArr, subArr.size());
+
+            // Copy the sorted subarray back into the original array
+            for (size_t j = 0; j < subArr.size(); ++j) {
+                arr[i + j] = subArr[j];
+            }
+        }
+
+        // Step 2: Merge sorted runs to create larger sorted segments
+        for (int size = RUN; size < n; size = 2 * size) {
+            for (int left = 0; left < n; left += 2 * size) {
+                int mid = std::min(left + size - 1, n - 1);  // Midpoint of the current segment
+                int right = std::min(left + 2 * size - 1, n - 1);  // Right boundary of the current segment
+
+                // Merge two sorted runs if mid is before right
+                if (mid < right) {
+                    merge(arr, left, mid, right);  // Merge two runs
+                }
             }
         }
     }
