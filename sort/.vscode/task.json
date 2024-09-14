@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+      {
+          "label": "build",
+          "type": "shell",
+          "command": "g++",
+          "args": [
+              "-g", // 添加调试信息
+              "${file}", // 当前打开的文件
+              "-o",
+              "${fileDirname}/main.out" // 输出的可执行文件名称和路径
+          ],
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": {
+              "owner": "cpp",
+              "fileLocation": ["relative", "${workspaceFolder}"],
+              "pattern": {
+                  "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                  "file": 1,
+                  "line": 2,
+                  "column": 3,
+                  "severity": 4,
+                  "message": 5
+              }
+          }
+      }
+  ]
+}
