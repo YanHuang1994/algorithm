@@ -1,4 +1,4 @@
-#include "BinaryTree.h"
+#include "../include/BinaryTree.h"
 using namespace std;
 
 TreeNode::TreeNode(int val) : value(val), left(nullptr), right(nullptr) {}

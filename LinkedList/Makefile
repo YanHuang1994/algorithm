@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -std=c++11
 
-SOURCES = LinkedList.cpp main.cpp
+SOURCES = ./src/LinkedList.cpp ./src/main.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 EXECUTABLE = LinkedList_program
 
@@ -15,3 +15,4 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
+	rm -f *.swo *.swp

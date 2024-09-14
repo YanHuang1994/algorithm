@@ -1,6 +1,9 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
+#include <string>
+#include <iostream>
+
 /**
  * @class ListNode
  * @brief This class represents a node in the linked list.
@@ -46,6 +49,7 @@ public:
 class LinkedList {
 private:
     ListNode* head;  ///< Pointer to the first node (head) of the linked list.
+    bool quickSortDebug; ///< Controls whether quicksort debug mode is enabled.
 
 public:
     /**
@@ -72,6 +76,16 @@ public:
      * @return ListNode* Pointer to the head node of the list.
      */
     ListNode* getHead() const;
+
+    /**
+     * @brief Gets the tail node of the linked list.
+     * 
+     * This function traverses the list and returns the last node.
+     * 
+     * @param head The starting node of the list.
+     * @return ListNode* Pointer to the tail node of the list.
+     */
+    ListNode* getTail(ListNode* head);
 
     /**
      * @brief Adds a new node with a given value to the end of the list.
@@ -145,8 +159,10 @@ public:
      *
      * This method traverses the list and prints the data values
      * of all the nodes in the list, in order from head to tail.
+     *
+     * @param limit The maximum number of nodes to display (optional).
      */
-    void display();
+    void display(int limit = -1);
 
     /**
      * @brief Reverses the order of nodes in the linked list.
@@ -157,35 +173,95 @@ public:
     void reverse();
 
     /**
-     * @brief Sorts the linked list in ascending order.
+     * @brief Enables quick sort debug mode.
      *
-     * This method sorts the list using a quicksort algorithm,
-     * rearranging the nodes in non-decreasing order.
+     * This method enables debug mode for quick sort,
+     * which allows step-by-step visualization of the sorting process.
      */
-    void sort();
+    void enableQuickSortDebug();
+
+    /**
+     * @brief Disables quick sort debug mode (optional).
+     *
+     * This method disables quick sort debug mode.
+     */
+    void disableQuickSortDebug();
+
+    /**
+     * @brief Sorts the linked list using a specified sorting method.
+     * 
+     * This method sorts the linked list using either "merge" or "quick" sort.
+     * 
+     * @param method The sorting method to use ("merge" or "quick").
+     */
+    void sort(const std::string& method);
+
+    /**
+     * @brief Checks if the linked list is sorted in non-decreasing order.
+     * 
+     * This method traverses the list and checks if each node's value is
+     * less than or equal to the next node's value.
+     * 
+     * @return true If the list is sorted, false otherwise.
+     */
+    bool isSorted() const;
 
 private:
     /**
-     * @brief Helper function to perform quicksort on the linked list.
-     *
-     * This method sorts the linked list using a quicksort algorithm.
-     * It is called recursively to sort the partitions of the list.
+     * @brief Quick sort helper function for sorting the list.
+     * 
+     * This function implements the quick sort algorithm for the linked list.
+     * It recursively sorts the list between head and tail nodes.
      * 
      * @return ListNode* Pointer to the new head of the sorted list.
      */
     ListNode* quickSort();
 
     /**
-     * @brief Helper function to partition the linked list for quicksort.
+     * @brief Partition function used by quick sort.
      * 
-     * This function partitions the linked list into two parts around a pivot.
-     * Nodes smaller than the pivot are moved to the left of the pivot, and nodes
-     * greater than or equal to the pivot are moved to the right.
+     * This function partitions the list into two parts, where nodes smaller
+     * than the pivot go to the left, and nodes greater than or equal to the
+     * pivot go to the right.
      * 
-     * @param head Pointer to the start of the partition.
-     * @param tail Pointer to the end of the partition.
+     * @param head The starting node of the partition.
+     * @param tail The ending node of the partition.
      */
     void partition(ListNode* head, ListNode* tail);
+
+    /**
+     * @brief Merge sort helper function for sorting the list.
+     * 
+     * This function implements the merge sort algorithm for the linked list.
+     * It recursively splits and merges the list to sort it.
+     * 
+     * @param head The head of the list to be sorted.
+     * @return ListNode* Pointer to the new head of the sorted list.
+     */
+    ListNode* mergeSort(ListNode* head);
+
+    /**
+     * @brief Helper function to find the middle of the list.
+     * 
+     * This method uses the slow-fast pointer technique to find the middle node
+     * of the list for use in merge sort.
+     * 
+     * @param head The starting node of the list.
+     * @return ListNode* Pointer to the middle node of the list.
+     */
+    ListNode* getMiddle(ListNode* head);
+
+    /**
+     * @brief Merges two sorted lists into one.
+     * 
+     * This function merges two sorted sublists into one sorted list,
+     * and is used by the merge sort algorithm.
+     * 
+     * @param left The head of the first sorted sublist.
+     * @param right The head of the second sorted sublist.
+     * @return ListNode* Pointer to the head of the merged sorted list.
+     */
+    ListNode* merge(ListNode* left, ListNode* right);
 };
 
 #endif

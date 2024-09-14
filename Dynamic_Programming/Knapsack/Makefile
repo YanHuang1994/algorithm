@@ -15,3 +15,4 @@ $(EXEC): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(EXEC)
+	rm -f *.swo *.swp

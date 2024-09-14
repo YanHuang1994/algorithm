@@ -1,6 +1,4 @@
-#include <iostream>
-#include "LinkedList.h"
-#include <string>
+#include "../include/LinkedList.h"
 
 using namespace std;
 
@@ -26,6 +24,16 @@ LinkedList::~LinkedList() {
 }
 
 ListNode* LinkedList::getHead() const {
+    return head;
+}
+
+ListNode* LinkedList::getTail(ListNode* head) {
+    if (!head) return nullptr;
+    
+    while (head->next != nullptr) {
+        head = head->next; 
+    }
+    
     return head;
 }
 
@@ -116,13 +124,15 @@ bool LinkedList::update(int oldVal, int newVal) {
     return false;
 }
 
-void LinkedList::display() {
-    ListNode* temp = head;
-    while (temp) {
-        std::cout << temp->data << " -> ";
-        temp = temp->next;
+void LinkedList::display(int limit) {
+    ListNode *current = head;
+    int count = 0;
+    while (current != nullptr && (limit == -1 || count < limit)) {
+        std::cout << current->data << " ";
+        current = current->next;
+        ++count;
     }
-    std::cout << "nullptr" << std::endl;
+    std::cout << std::endl;
 }
 
 void LinkedList::reverse() {
@@ -141,15 +151,83 @@ void LinkedList::reverse() {
     delete dummy;
 }
 
-void LinkedList::sort() {
+void LinkedList::enableQuickSortDebug() {
+    quickSortDebug = true;
+}
+
+void LinkedList::disableQuickSortDebug() {
+    quickSortDebug = false;
+}
+
+// Helper function to find the middle of the list
+ListNode* LinkedList::getMiddle(ListNode* head) {
+    if (!head || !head->next) {
+        return head;
+    }
+    ListNode* slow = head;
+    ListNode* fast = head->next;
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return slow;  // slow is now pointing to the middle node
+}
+
+// Helper function to merge two sorted lists
+ListNode* LinkedList::merge(ListNode* left, ListNode* right) {
+    // If one of the lists is empty, return the other
+    if (!left) return right;
+    if (!right) return left;
+
+    // Choose the smaller node and recursively merge the rest
+    if (left->data <= right->data) {
+        left->next = merge(left->next, right);
+        return left;
+    } else {
+        right->next = merge(left, right->next);
+        return right;
+    }
+}
+
+// Merge sort function to sort the linked list
+ListNode* LinkedList::mergeSort(ListNode* head) {
+    // Base case: if head is null or only one element, return
+    if (!head || !head->next) {
+        return head;
+    }
+
+    // Step 1: Split the list into two halves
+    ListNode* middle = getMiddle(head);
+    ListNode* secondHalf = middle->next;
+    middle->next = nullptr;  // Break the link between the two halves
+
+    // Step 2: Recursively sort both halves
+    ListNode* left = mergeSort(head);
+    ListNode* right = mergeSort(secondHalf);
+
+    // Step 3: Merge the sorted halves
+    return merge(left, right);
+}
+
+void LinkedList::sort(const std::string& method) {
     if (!head || !head->next) return;
-    quickSort();
-    return;
+
+    if (method == "merge") {
+        // use mergeSort
+        head = mergeSort(head);
+        std::cout << "Sorted using Merge Sort." << std::endl;
+    } else if (method == "quick") {
+        // use quickSort
+        head = quickSort();
+        std::cout << "Sorted using Quick Sort." << std::endl;
+    } else {
+        std::cout << "Invalid sorting method. Please choose 'merge' or 'quick'." << std::endl;
+    }
 }
 
 ListNode* LinkedList::quickSort() {
     partition(head, nullptr);
-    return head;  // 返回排序后的链表头部
+    return head;
 }
 
 void LinkedList::partition(ListNode* head, ListNode* tail) {
@@ -174,4 +252,15 @@ void LinkedList::partition(ListNode* head, ListNode* tail) {
 
     partition(head, slow);
     partition(slow->next, tail);
+}
+
+bool LinkedList::isSorted() const {
+    ListNode* current = head;
+    while (current != nullptr && current->next != nullptr) {
+        if (current->data > current->next->data) {
+            return false;  // List is not sorted
+        }
+        current = current->next;
+    }
+    return true;  // List is sorted
 }
