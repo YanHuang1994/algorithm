@@ -20,7 +20,7 @@ LinkedList createCopy(const LinkedList &original) {
 
 // Benchmarking the append operation for a given number of elements
 void benchmarkAppend(LinkedList &list, int numElements) {
-    cout << "Starting append benchmark for " << numElements << " elements..." << endl;
+    cout << "\nStarting append benchmark for " << numElements << " elements..." << endl;
     auto start = high_resolution_clock::now();
     for (int i = 0; i < numElements; ++i) {
         int value = rand() % 100;
@@ -42,8 +42,8 @@ void benchmarkAppend(LinkedList &list, int numElements) {
 
 // Benchmarking the remove operation for a subset of elements
 void benchmarkRemove(LinkedList &list, int numElements) {
-    cout << "Starting remove benchmark for " << numElements / 10 << " elements..." << endl;
-    
+    cout << "\nStarting remove benchmark for " << numElements / 10 << " elements..." << endl;
+
     // Create a copy of the original list for testing remove operation
     LinkedList copy = createCopy(list);
 
@@ -52,35 +52,43 @@ void benchmarkRemove(LinkedList &list, int numElements) {
         cout << "Original Linked List (Copy) before removal:" << endl;
         copy.display();  // Display the original list (copy) before removals
     }
-    
+
     auto start = high_resolution_clock::now();
-    
+
     // Loop to remove elements from the copy
     for (int i = 0; i < numElements / 10; ++i) {
         int value = rand() % 100;  // Generate a random value to remove
+
         if (numElements == 10 && i < 10) {
             cout << "Attempting to remove value: " << value << " from the copy" << endl;
         }
-        
-        // Perform removal from the copy
-        copy.remove(value);  
-        
-        // Display the copy after each removal if numElements == 10
-        if (numElements == 10) {
-            cout << "Linked List (Copy) after attempting to remove " << value << ":" << endl;
-            copy.display();
+
+        // Check if the value is in the list before attempting to remove
+        if (copy.contains(value)) {
+            // Perform removal from the copy
+            copy.remove(value);
+            if (numElements == 10) {
+                cout << "Successfully removed value: " << value << endl;
+                cout << "Linked List (Copy) after removing " << value << ":" << endl;
+                copy.display();
+            }
+        } else {
+            if (numElements == 10) {
+                cout << "Value " << value << " not found in the copy, removal failed." << endl;
+            }
         }
     }
-    
+
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<std::chrono::duration<double>>(stop - start);
     cout << "Time taken to remove " << numElements / 10 << " elements from the copy: " << duration.count() << " seconds" << endl;
     cout << "Remove operation completed on the copy." << endl;
+
 }
 
 // Benchmarking the search operation for a subset of elements
 void benchmarkSearch(const LinkedList &list, int numElements) {
-    cout << "Starting search benchmark for " << numElements / 10 << " elements..." << endl;
+    cout << "\nStarting search benchmark for " << numElements / 10 << " elements..." << endl;
     auto start = high_resolution_clock::now();
     for (int i = 0; i < numElements / 10; ++i) {
         int value = rand() % 100;
@@ -97,7 +105,7 @@ void benchmarkSearch(const LinkedList &list, int numElements) {
 
 // Benchmarking the update operation for a subset of elements
 void benchmarkUpdate(LinkedList &list, int numElements) {
-    cout << "Starting update benchmark for " << numElements / 10 << " elements..." << endl;
+    cout << "\nStarting update benchmark for " << numElements / 10 << " elements..." << endl;
     LinkedList copy = createCopy(list);
     auto start = high_resolution_clock::now();
     for (int i = 0; i < numElements / 10; ++i) {
@@ -116,7 +124,7 @@ void benchmarkUpdate(LinkedList &list, int numElements) {
 
 // Benchmarking the reverse operation
 void benchmarkReverse(LinkedList &list, int numElements) {
-    cout << "Starting reverse benchmark for list of " << numElements << " elements..." << endl;
+    cout << "\nStarting reverse benchmark for list of " << numElements << " elements..." << endl;
     LinkedList copy = createCopy(list);
     auto start = high_resolution_clock::now();
     copy.reverse();
@@ -133,7 +141,7 @@ void benchmarkReverse(LinkedList &list, int numElements) {
 
 // Benchmarking the sort operation
 void benchmarkSort(LinkedList &list, int numElements) {
-    cout << "Starting merge sort benchmark for list of " << numElements << " elements..." << endl;
+    cout << "\nStarting merge sort benchmark for list of " << numElements << " elements..." << endl;
     
     // Create a copy of the list to sort using merge sort
     LinkedList mergeCopy = createCopy(list);
