@@ -61,19 +61,22 @@ void BinaryTree::insert(int value) {
 }
 
 bool BinaryTree::find(int value) {
-    if (!root) return false;
-    std::queue<TreeNode*> q;
-    q.push(root);
+    std::cout << "Searching for value: " << value << std::endl;
 
-    while (!q.empty()) {
-        TreeNode* current = q.front();
-        q.pop();
-        if (current->value == value) return true;
-        if (current->left) q.push(current->left);
-        if (current->right) q.push(current->right);
-    }
+    // Execute Recursive Search
+    bool foundRecursive = findRecursive(root, value);
+    std::cout << "Recursive Search: " << (foundRecursive ? "Found" : "Not Found") << std::endl;
 
-    return false;
+    // Execute BFS Search
+    bool foundBFS = findBFS(root, value);
+    std::cout << "BFS Search: " << (foundBFS ? "Found" : "Not Found") << std::endl;
+
+    // Execute DFS Search
+    bool foundDFS = findDFS(root, value);
+    std::cout << "DFS Search: " << (foundDFS ? "Found" : "Not Found") << std::endl;
+
+    // Return true if any of the search methods found the value
+    return foundRecursive || foundBFS || foundDFS;
 }
 
 void BinaryTree::update(int oldVal, int newVal) {
@@ -102,11 +105,11 @@ void BinaryTree::preorder(TreeNode* node, vector<int>& ret) {
     return;
 }
 
-vector<int> BinaryTree::preorderIterative(TreeNode* root) {
+vector<int> BinaryTree::preorderIterative(TreeNode* node) {
     vector<int> ret;
-    if (!root) return ret;
+    if (!node) return ret;
     stack<TreeNode* > s;
-    TreeNode* cur = root;
+    TreeNode* cur = node;
     while (cur || !s.empty()) {
         while (cur) {
             s.push(cur);
@@ -156,10 +159,10 @@ void BinaryTree::postorder(TreeNode* node, vector<int>& ret) {
     return;
 }
 
-vector<int> BinaryTree::postorderIterative(TreeNode* root) {
+vector<int> BinaryTree::postorderIterative(TreeNode* node) {
     vector<int> ret;
-    if (!root) return ret;
-    TreeNode* cur = root, *last = nullptr;
+    if (!node) return ret;
+    TreeNode* cur = node, *last = nullptr;
     stack<TreeNode* > s;
     while (cur || !s.empty()) {
         while (cur) {
@@ -260,17 +263,23 @@ void BinaryTree::displayLevelOrder() {
 void BinaryTree::displayPathSum(int targetSum) {
     vector<vector<int> > paths = pathSum(root, targetSum);
 
+    cout << "[ ";
+
     for (size_t i = 0; i < paths.size(); ++i) {
         cout << "[ ";
         for (size_t j = 0; j < paths[i].size(); ++j) {
             std::cout << paths[i][j];
-            if (j != paths[i].size() - 1) std::cout << ", ";
+            if (j != paths[i].size() - 1) {
+                std::cout << ", ";
+            }
         }
         cout << " ]";
-        if (i != paths.size() - 1) std::cout << ", ";
+        if (i != paths.size() - 1) {
+            std::cout << ", ";
+        }
     }
+
     cout << " ]\n";
-    cout << endl;
 }
 
 vector<vector<int>> BinaryTree::pathSum(TreeNode* root, int targetSum) {
@@ -280,6 +289,18 @@ vector<vector<int>> BinaryTree::pathSum(TreeNode* root, int targetSum) {
     dfsPaths(root, targetSum, path, paths);
 
     return paths;
+}
+
+int BinaryTree::maxDepth() {
+    return maxDepth(root);
+}
+
+int BinaryTree::minDepth() {
+    return minDepth(root);
+}
+
+int BinaryTree::countNodes() {
+    return countNodes(root);
 }
 
 void BinaryTree::dfsPaths(TreeNode* node, int targetSum, vector<int>& path, vector<vector<int>>& paths) {
@@ -299,28 +320,187 @@ bool BinaryTree::isSameTree(TreeNode* p, TreeNode* q) {
     return false;
 }
 
-int BinaryTree::maxDepth(TreeNode* root) {
-    if (!root) return 0;
-    int l = maxDepth(root->left);
-    int r = maxDepth(root->right);
+void BinaryTree::mirrorTree(TreeNode *node) {
+    if (!node) return;
+
+    // Swap the left and right children
+    std::swap(node->left, node->right);
+
+    // Recur for the left and right subtrees
+    mirrorTree(node->left);
+    mirrorTree(node->right);
+}
+
+bool BinaryTree::isFullBinaryTree(TreeNode *node) {
+    // Base case: An empty tree is considered a full binary tree
+    if (!node) return true;
+
+    // If the node is a leaf (has no children), it's a full binary tree
+    if (!node->left && !node->right) return true;
+
+    // If the node has both left and right children, check its subtrees
+    if (node->left && node->right) {
+        return isFullBinaryTree(node->left) && isFullBinaryTree(node->right);
+    }
+
+    // If the node has only one child, it's not a full binary tree
+    return false;
+}
+
+bool BinaryTree::isCompleteBinaryTree(TreeNode *node, int index, int nodeCount)
+{
+    // An empty tree is considered a complete binary tree
+    if (!node) return true;
+
+    // If the current node's index exceeds or equals the total number of nodes, it's not complete
+    if (index >= nodeCount) return false;
+
+    // Recursively check the left and right subtrees
+    return isCompleteBinaryTree(node->left, 2 * index + 1, nodeCount) &&
+           isCompleteBinaryTree(node->right, 2 * index + 2, nodeCount);
+}
+
+TreeNode *BinaryTree::invertTree(TreeNode *node)
+{
+    if (!node) return nullptr;
+
+    // Recursively invert left and right subtrees
+    TreeNode* left = invertTree(node->left);
+    TreeNode* right = invertTree(node->right);
+
+    // Swap the left and right children
+    node->left = right;
+    node->right = left;
+
+    return node;
+}
+
+bool BinaryTree::isBalanced(TreeNode* node) {
+    if (!node) return true;
+    int left = depth(node->left);
+    int right = depth(node->right);
+
+    return abs(left - right) <= 1 && isBalanced(node->left) && isBalanced(node->right);
+}
+
+int BinaryTree::maxDepth(TreeNode* node) {
+    if (!node) return 0;
+    int l = maxDepth(node->left);
+    int r = maxDepth(node->right);
     return max(l+1, r+1);
 }
 
-int BinaryTree::minDepth(TreeNode* root) {
-    if(!root) return 0;
-    int l = minDepth(root->left), r = minDepth(root->right);
+int BinaryTree::minDepth(TreeNode* node) {
+    if(!node) return 0;
+    int l = minDepth(node->left), r = minDepth(node->right);
     return (min(l, r) ? min(l, r) : max(l, r)) + 1;
 }
 
-bool BinaryTree::isBalanced(TreeNode* root) {
-    if (!root) return true;
-    int left = depth(root->left);
-    int right = depth(root->right);
-
-    return abs(left - right) <= 1 && isBalanced(root->left) && isBalanced(root->right);
+int BinaryTree::countNodes(TreeNode *node) {
+    if (!node) return 0;
+    return 1 + countNodes(node->left) + countNodes(node->right);
 }
 
-int BinaryTree::depth(TreeNode* root) {
-    if (!root) return 0;
-    return max(depth(root->left), depth(root->right)) + 1;
+bool BinaryTree::isSameTree(const BinaryTree &other) {
+    return isSameTree(this->root, other.root);
+}
+
+bool BinaryTree::isBalanced() {
+    return isBalanced(root);
+}
+
+void BinaryTree::mirrorTree() {
+    mirrorTree(root);
+}
+
+bool BinaryTree::isFullBinaryTree() {
+    return isFullBinaryTree(root);
+}
+
+bool BinaryTree::isCompleteBinaryTree() {
+    int nodeCount = countNodes(root);
+    return isCompleteBinaryTree(root, 0, nodeCount);
+}
+
+void BinaryTree::invertTree() {
+    root = invertTree(root);
+}
+
+int BinaryTree::findMinValue() {
+    return findMinValue(root);
+}
+
+int BinaryTree::findMaxValue() {
+    return findMaxValue(root);
+}
+
+int BinaryTree::depth(TreeNode *node) {
+    if (!node) return 0;
+    return max(depth(node->left), depth(node->right)) + 1;
+}
+
+bool BinaryTree::findRecursive(TreeNode *node, int value) {
+    if (!node) return false;
+
+    if (node->value == value) return true;
+
+    return findRecursive(node->left, value) || findRecursive(node->right, value);
+}
+
+bool BinaryTree::findBFS(TreeNode* node, int value) {
+    if (!node) return false;
+
+    std::queue<TreeNode*> q;
+    q.push(node);
+
+    while (!q.empty()) {
+        TreeNode* current = q.front();
+        q.pop();
+
+        if (current->value == value) return true;
+
+        if (current->left) q.push(current->left);
+        if (current->right) q.push(current->right);
+    }
+
+    return false;
+}
+
+bool BinaryTree::findDFS(TreeNode* node, int value) {
+    if (!node) return false;
+
+    std::stack<TreeNode*> s;
+    s.push(node);
+
+    while (!s.empty()) {
+        TreeNode* current = s.top();
+        s.pop();
+
+        if (current->value == value) return true;
+
+        if (current->right) s.push(current->right);
+        if (current->left) s.push(current->left);
+    }
+
+    return false;
+}
+
+int BinaryTree::findMinValue(TreeNode *node) {
+    if (!node) return INT_MAX;
+
+    int minVal = node->value;
+    int leftMin = findMinValue(node->left);
+    int rightMin = findMinValue(node->right);
+
+    return std::min(minVal, std::min(leftMin, rightMin));
+}
+
+int BinaryTree::findMaxValue(TreeNode *node) {
+    if (!node) return INT_MIN;
+
+    int maxVal = node->value;
+    int leftMax = findMaxValue(node->left);
+    int rightMax = findMaxValue(node->right);
+
+    return std::max(maxVal, std::max(leftMax, rightMax));
 }
