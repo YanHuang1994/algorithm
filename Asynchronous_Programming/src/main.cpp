@@ -4,18 +4,26 @@
 #include <future>
 #include <vector>
 
-// 模拟一个费时任务
+/**
+ * @brief Simulates a time-consuming task.
+ * @param n Task identifier.
+ */
 void heavyTask(int n) {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     std::cout << "Task " << n << " completed." << std::endl;
 }
 
-// 回调函数，处理任务完成后的结果
+/**
+ * @brief Callback function to handle task completion.
+ * @param result The result passed from the completed task.
+ */
 void taskCallback(int result) {
     std::cout << "Callback: Task completed with result = " << result << std::endl;
 }
 
-// 同步执行任务
+/**
+ * @brief Executes tasks synchronously.
+ */
 void executeSync() {
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -29,9 +37,11 @@ void executeSync() {
     std::cout << "Sync execution time: " << elapsed.count() << " seconds." << std::endl;
 }
 
-// 使用线程池执行任务
+/**
+ * @brief Executes tasks asynchronously using a thread pool.
+ */
 void executeWithThreadPool() {
-    ThreadPool pool(10); // 创建线程池，10 个线程
+    ThreadPool pool(10);  // Create a thread pool with 10 threads
 
     auto start = std::chrono::high_resolution_clock::now();
     std::vector<std::future<void>> results;
@@ -41,7 +51,7 @@ void executeWithThreadPool() {
     }
 
     for (auto& result : results) {
-        result.get(); // 等待任务完成
+        result.get();  // Wait for all tasks to complete
     }
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -50,18 +60,19 @@ void executeWithThreadPool() {
     std::cout << "Execution time with ThreadPool: " << elapsed.count() << " seconds." << std::endl;
 }
 
-// 使用普通线程执行任务
+/**
+ * @brief Executes tasks using multiple threads without a thread pool.
+ */
 void executeWithThreads() {
     std::vector<std::thread> threads;
-
     auto start = std::chrono::high_resolution_clock::now();
 
-    // 创建多个线程并执行任务
+    // Create multiple threads to execute tasks
     for (int i = 0; i < 10; ++i) {
         threads.push_back(std::thread([i] { heavyTask(i); }));
     }
 
-    // 等待所有线程完成
+    // Wait for all threads to complete
     for (auto& t : threads) {
         t.join();
     }
@@ -79,7 +90,7 @@ int main() {
     std::cout << "\nStarting async execution with thread pool..." << std::endl;
     executeWithThreadPool();
 
-    std::cout << "\nStarting async execution with thread only..." << std::endl;
+    std::cout << "\nStarting async execution with threads only..." << std::endl;
     executeWithThreads();
 
     return 0;

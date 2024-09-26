@@ -10,28 +10,49 @@
 #include <functional>
 #include <iostream>
 
-// 定义任务类型
+// Type alias for the task and callback functions
 using Task = std::function<void()>;
 using Callback = std::function<void(int)>;
 
-// 线程池类
+/**
+ * @class ThreadPool
+ * @brief A simple thread pool implementation.
+ * 
+ * This class manages a pool of worker threads that can execute tasks asynchronously.
+ */
 class ThreadPool {
 public:
-    ThreadPool(size_t);
+    /**
+     * @brief Constructs a thread pool with a specified number of threads.
+     * @param threads The number of threads in the pool.
+     */
+    ThreadPool(size_t threads);
+
+    /**
+     * @brief Destructor that ensures all worker threads finish execution.
+     */
     ~ThreadPool();
 
-    // 向线程池中添加任务，并返回 std::future<void>
+    /**
+     * @brief Adds a new task to the thread pool.
+     * @param task The task to be executed, encapsulated in a std::function.
+     * @param callback A callback function to be executed after the task completion.
+     * @return A std::future<void> that can be used to wait for the task to complete.
+     */
     std::future<void> enqueue(Task task, Callback callback);
 
 private:
-    void workerThread(); // 工作线程
+    /**
+     * @brief Function for each worker thread to execute tasks from the queue.
+     */
+    void workerThread(); 
 
-    std::vector<std::thread> workers;                  // 存储工作线程
-    std::queue<std::pair<Task, Callback>> tasks;       // 任务队列，包括回调函数
+    std::vector<std::thread> workers;                  ///< Container for worker threads
+    std::queue<std::pair<Task, Callback>> tasks;       ///< Queue for storing tasks and their callbacks
 
-    std::mutex queueMutex;                             // 任务队列的互斥锁
-    std::condition_variable condition;                 // 条件变量，用于线程同步
-    bool stop;                                         // 线程池停止标志
+    std::mutex queueMutex;                             ///< Mutex to protect the task queue
+    std::condition_variable condition;                 ///< Condition variable for task synchronization
+    bool stop;                                         ///< Flag to indicate if the thread pool should stop
 };
 
 #endif // THREADPOOL_H

@@ -1,29 +1,40 @@
 #include "../include/ThreadPool.h"
 
-// 线程池构造函数，创建指定数量的工作线程
+/**
+ * @brief Thread pool constructor, initializes the specified number of worker threads.
+ * @param threads The number of threads to be created in the pool.
+ */
 ThreadPool::ThreadPool(size_t threads) : stop(false) {
     for (size_t i = 0; i < threads; ++i) {
         workers.emplace_back([this] { workerThread(); });
     }
 }
 
-// 线程池析构函数，确保所有工作线程完成后退出
+/**
+ * @brief Thread pool destructor, ensures all threads complete before destruction.
+ */
 ThreadPool::~ThreadPool() {
     {
         std::unique_lock<std::mutex> lock(queueMutex);
-        stop = true;
+        stop = true;  // Set stop flag to true
     }
-    condition.notify_all();
+    condition.notify_all();  // Notify all threads to wake up
     for (std::thread &worker : workers) {
-        worker.join();
+        worker.join();  // Wait for all worker threads to complete
     }
 }
 
-// 向线程池中添加任务，并返回 std::future<void>
+/**
+ * @brief Adds a new task to the thread pool's task queue.
+ * @param task The task to be executed.
+ * @param callback The callback to execute after the task is completed.
+ * @return A future object that can be used to wait for task completion.
+ * @throws std::runtime_error If the thread pool is stopped.
+ */
 std::future<void> ThreadPool::enqueue(Task task, Callback callback) {
     auto packagedTask = std::make_shared<std::packaged_task<void()>>(task);
-
     std::future<void> result = packagedTask->get_future();
+    
     {
         std::unique_lock<std::mutex> lock(queueMutex);
         if (stop) {
@@ -32,11 +43,14 @@ std::future<void> ThreadPool::enqueue(Task task, Callback callback) {
         tasks.emplace([packagedTask]() { (*packagedTask)(); }, callback);
     }
 
-    condition.notify_one();
+    condition.notify_one();  // Notify one worker thread to pick up the new task
     return result;
 }
 
-// 工作线程函数，负责从任务队列中取任务并执行
+/**
+ * @brief The main function for worker threads to execute tasks from the queue.
+ * This function runs in a loop, picking up tasks from the queue and executing them.
+ */
 void ThreadPool::workerThread() {
     while (true) {
         std::pair<Task, Callback> taskPair;
@@ -44,16 +58,14 @@ void ThreadPool::workerThread() {
             std::unique_lock<std::mutex> lock(queueMutex);
             condition.wait(lock, [this] { return stop || !tasks.empty(); });
             if (stop && tasks.empty()) {
-                return;
+                return;  // Exit if stop flag is set and no tasks remain
             }
 
-            taskPair = std::move(tasks.front());
-            tasks.pop();
+            taskPair = std::move(tasks.front());  // Get the task from the front of the queue
+            tasks.pop();  // Remove the task from the queue
         }
 
-        // 执行任务
-        taskPair.first();
-        // 执行回调函数（假设返回 42）
-        taskPair.second(42);
+        taskPair.first();  // Execute the task
+        taskPair.second(42);  // Execute the callback with a sample result (42)
     }
 }
