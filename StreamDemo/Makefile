@@ -1,28 +1,35 @@
-# 使用的编译器
+# Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++03 -I../include  # 指定使用C++03标准，并添加头文件路径
+CXXFLAGS = -std=c++14 -I../include  # Use C++11 standard and include header path
 
-# 动态库名称和路径
+# Shared library name and path
 LIB_NAME = libstreamprovider.so
 LIB_PATH = .
 
-# 编译动态库的源文件
-LIB_SRCS = ./src/stream_provider.cpp
+# Source files for the shared library
+LIB_SRCS = ./src/stream_provider.cpp ./src/stream_provider_internal.cpp
 
-# 服务端可执行文件的源文件
+# Source files for the server executable
 SERVER_SRCS = ./src/server.cpp
 
-# 默认目标
-all: server $(LIB_NAME)
+# Object files for the shared library (automatically generated)
+LIB_OBJS = $(LIB_SRCS:.cpp=.o)
 
-# 编译动态库
-$(LIB_NAME): $(LIB_SRCS)
-	$(CXX) $(CXXFLAGS) -fPIC -shared -o $(LIB_NAME) $(LIB_SRCS)
+# Default target
+all: $(LIB_NAME) server
 
-# 编译可执行文件，链接动态库并设置RPATH
+# Compile the shared library
+$(LIB_NAME): $(LIB_OBJS)
+	$(CXX) $(CXXFLAGS) -fPIC -shared -o $(LIB_NAME) $(LIB_OBJS)
+
+# Compile the server executable, link the shared library, and set RPATH
 server: $(SERVER_SRCS) $(LIB_NAME)
 	$(CXX) $(CXXFLAGS) -o server $(SERVER_SRCS) -L$(LIB_PATH) -lstreamprovider -Wl,-rpath=$(LIB_PATH)
 
-# 清理生成的文件
+# Compile object files for the shared library
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
+
+# Clean up generated files
 clean:
-	rm -f server $(LIB_NAME)
+	rm -f server $(LIB_NAME) $(LIB_OBJS)
