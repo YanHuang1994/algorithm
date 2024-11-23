@@ -29,11 +29,11 @@ ListNode* LinkedList::getHead() const {
 
 ListNode* LinkedList::getTail(ListNode* head) {
     if (!head) return nullptr;
-    
+
     while (head->next != nullptr) {
-        head = head->next; 
+        head = head->next;
     }
-    
+
     return head;
 }
 

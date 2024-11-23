@@ -11,7 +11,7 @@ SRC = src/main.cpp src/BoostCoreExamples.cpp
 TARGET = boost_example
 
 # Boost libraries to link
-BOOST_LIBS = -lboost_system -lboost_thread -lboost_filesystem -lpthread
+BOOST_LIBS = -lboost_system -lboost_thread-mt -lboost_chrono -lboost_filesystem
 
 # Build target
 all: $(TARGET)
@@ -22,3 +22,4 @@ $(TARGET): $(SRC)
 # Clean up
 clean:
 	rm -f $(TARGET)
+	rm -f *.swo *.swp

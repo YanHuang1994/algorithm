@@ -7,8 +7,8 @@ int main() {
     examples.scopedPtrExample();
     examples.filesystemExample();
     examples.regexExample();
-    examples.asioExample();
     examples.threadExample();
-
+    examples.threadPoolExample();
+    examples.asyncCalculationExample();
     return 0;
 }

@@ -107,7 +107,7 @@ int main() {
         {"Bronze Medallion", 1, 2}
     };
 
-    int maxCapacity = 10;
+    int maxCapacity = 50;
 
     cout << "For 0-1 Knapsack:" << endl;
     vector<int> selectedItemsFor01;
